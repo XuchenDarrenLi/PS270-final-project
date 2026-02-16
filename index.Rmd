@@ -11,4 +11,4 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to...
+I am interested in exploring data related to the automobile industry and related industrial policies from governments. I am also open to researching on energy related data, including those related to carbon transition around the world. 
