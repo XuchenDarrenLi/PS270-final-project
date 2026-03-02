@@ -11,4 +11,31 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to the automobile industry and related industrial policies from governments. I am also open to researching on energy related data, including those related to carbon transition around the world. 
+I am interested in exploring data related to the automobile industry and related industrial policies from governments. I am also open to researching on energy related data, including those related to carbon transition around the world.
+
+## Research Question:
+I am interested in the US automobile industry and carbon emission in the past 10 years. I would like to conduct a study on the change of carbom emissions for cars manufactured in the past 10 years im the US, and how this is related to time, fuel type (regular gasoline, premium gasoline, diesel, etc), combined miles per gallon, vehicle size class(compact, vans, two-seaters, etc), and engine displacement. 
+To put this into more formulated language: my research question is "what are the contributing factors to the change of CO2 emissions of automobiles in the US in the past ten years, with respect to fuel type, car type, and fuel efficiency". 
+
+## Hypothesis 
+My hypothesis is that "increasing fuel efficiency and decrease dependence on diesel have contributed to the decrease of mean carbon emissions for US automobiles in the past 10 years, while car size has not seen any dramatic decrease. 
+The base for my hypothesis is that, although the US has been joining and quitting the Paris Agreement, and the current administration denied the severity of climate change, consumer preferences for cars that are cheaper to drive and the abandonment of diesel, a less efficient source of power has helped the carbom emission decrease for US vehicles. 
+
+## Explanatory varibles
+My explanatory variables are time (measured in year), fuel type (measured as a categorical variable), car size (also a categorical variable), and fuel efficiency (a numerical variable). For the categorical variables, I will see how the number of each group changed over time. For example, has the number of car models that is labeled as "compacted" decrease overtime? For the numerical variables, a direct measurement of the mean carbon emission will be more straightforward. 
+
+## Outcome Varibale 
+My outcome variable will be mean tail pipe CO2 emission. 
+
+## Expectation trends
+If the number of models that rely on diesel decreased, the mean fuel efficiency increased, and mean CO2 emissions decreased, while number of models that are smaller remained same or decreased, my hypothesis will be streagthened. If the mean CO2 emissions did not decrease, or number of models that rely on diesel did not change or increased, or had fuel efficiency not increased, or had smaller vehicles increased, my hypothesis will be undermined. 
+
+## Load Data 
+```{r}
+library(tidyverse)
+vehicles<-
+  read.csv("/Users/darrenli/Desktop/Poli Sci 270/PS270-final-project/data/vehicles.csv")
+glimpse(vehicles)
+head(vehicles)
+```
+
