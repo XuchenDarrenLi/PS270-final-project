@@ -40,3 +40,30 @@ glimpse(vehicles)
 head(vehicles)
 ```
 
+
+
+## Cleaning the data to select the variables that we are interested in
+
+```{r}
+vehicles_interest<-
+  vehicles|>
+  select(barrels08, fuelType1, VClass, year, co2TailpipeGpm, city08)
+```
+
+## How did mean annual petroleum consumption in barrels change over the years 
+
+```{r}
+vehicles_interest |>
+  group_by(year) |>
+  summarize(mean_barrels = mean(barrels08, na.rm = TRUE)) |>
+  ggplot(aes(x = year, y = mean_barrels)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Mean Petroleum Consumption Over Time",
+    x = "Year",
+    y = "Mean Barrels"
+  ) +
+  theme_minimal()
+  
+```
