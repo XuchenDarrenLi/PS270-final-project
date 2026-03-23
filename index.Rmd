@@ -34,6 +34,7 @@ If the number of models that rely on diesel decreased, the mean fuel efficiency 
 ## Load Data 
 ```{r}
 library(tidyverse)
+library(dplyr)
 vehicles<-
   read.csv("/Users/darrenli/Desktop/Poli Sci 270/PS270-final-project/data/vehicles.csv")
 glimpse(vehicles)
@@ -69,3 +70,39 @@ vehicles_interest |>
 graph_mean_comsumption_change_year
   
 ```
+
+
+## How did CO2 tailpipe change over the years for commonly used vehicle class?
+
+```{r fig.height=10}
+top5_vclass <-
+  vehicles_interest |>
+  count(VClass, sort = TRUE) |>
+  slice_head(n = 5) |>
+  pull(VClass)
+
+graph_mean_tailpipe_change_year <-
+  vehicles_interest |>
+  filter(VClass %in% top5_vclass) |>
+  group_by(year, VClass) |>
+  summarize(
+    mean_co2 = mean(co2TailpipeGpm, na.rm = TRUE)
+  ) |>
+  ggplot(aes(
+    x = year,
+    y = mean_co2
+  )) +
+  geom_line() +
+  geom_point(size = 0.8) +
+  facet_wrap(~VClass, ncol = 2) +
+  labs(
+    title = "Mean CO2 Tailpipe Emissions Over Time by Vehicle Class",
+    x = "Year",
+    y = "Mean CO2 Tailpipe Emissions (g/mile)"
+  ) +
+  theme_minimal(base_size = 14)
+
+graph_mean_tailpipe_change_year
+```
+
+Interpretation: I find the five most popular vehicle types and try to show the change in co2 tailpipe emissions throughout the years. The trend clearly shows that co2 tailpipe emissions has decreased steadily for compact cars, large cars, midsize cars. On the other hand, co2 tailpipe emissions has roughly remained the same for subcompact cars and two-seaters. 
