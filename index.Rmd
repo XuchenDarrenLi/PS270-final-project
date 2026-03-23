@@ -53,6 +53,7 @@ vehicles_interest<-
 ## How did mean annual petroleum consumption in barrels change over the years 
 
 ```{r}
+graph_mean_comsumption_change_year<-
 vehicles_interest |>
   group_by(year) |>
   summarize(mean_barrels = mean(barrels08, na.rm = TRUE)) |>
@@ -65,5 +66,6 @@ vehicles_interest |>
     y = "Mean Barrels"
   ) +
   theme_minimal()
+graph_mean_comsumption_change_year
   
 ```
