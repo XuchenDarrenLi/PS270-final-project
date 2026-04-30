@@ -149,7 +149,7 @@ Vehicle Class, once included in the graph, will add many more lines to the table
 
 Fuel Efficiency and CO2 Emissions
 ```{r}
-vehicles_reg |>
+fuel_efficiency_emissions<-vehicles_reg |>
   ggplot(aes(x = city08, y = co2TailpipeGpm)) +
   geom_point(alpha = 0.2) +
   geom_smooth(method = "lm", color = "blue") +
@@ -159,12 +159,14 @@ vehicles_reg |>
     y = "CO2 Emissions (g/mile)"
   ) +
   theme_minimal()
+fuel_efficiency_emissions
 ```
 
 This means that there's a clear negative correlation between CO2 emission and Fuel Efficiency. As Fuel efficiency decrease, CO2 emissions decrease until fuel efficiency reaches 80. The change between 80 and 160 is not dramatic , remaining at a very low level (around 0)
 
 Fuel Type and CO2 Emissions
 ```{r}
+fuel_type_emissions<-
 vehicles_reg |>
   ggplot(aes(x = fuelType1, y = co2TailpipeGpm)) +
   geom_point(alpha = 0.2) +
@@ -178,6 +180,7 @@ vehicles_reg |>
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
+fuel_type_emissions
 ```
 This graph shows that CO2 emissions vary substantially across fuel types.Vehicles using gasoline (both regular and premium) shows the highest and most widely distributed CO2 emissions, indicating greater variability and generally higher emission levels. Diesel and midgrade gasoline vehicles have moderately high emissions, but less variation compared to gasoline.In contrast, electricity and hydrogen vehicles have emissions close to zero, reflecting their low or zero tailpipe emissions. Natural gas vehicles fall in between, with lower emissions than gasoline but higher than electric vehicles.Overall, the figure highlights that fuel type is an important determinant of vehicle emissions, with cleaner energy sources such as electricity associated with significantly lower CO2 output.
 
