@@ -8,19 +8,14 @@ output:
 ---
 
 
-
-
-## Project thoughts
-
-I am interested in exploring data related to the automobile industry and related industrial policies from governments. I am also open to researching on energy related data, including those related to carbon transition around the world.
-
-## Research Question:
-I am interested in the US automobile industry and carbon emission in the past 10 years. I would like to conduct a study on the change of carbom emissions for cars manufactured in the past 10 years im the US, and how this is related to time, fuel type (regular gasoline, premium gasoline, diesel, etc), combined miles per gallon, vehicle size class(compact, vans, two-seaters, etc), and engine displacement. 
-To put this into more formulated language: my research question is "what are the contributing factors to the change of CO2 emissions of automobiles in the US in the past ten years, with respect to fuel type, car type, and fuel efficiency". 
-
-## Hypothesis 
-My hypothesis is that "increasing fuel efficiency and decrease dependence on diesel have contributed to the decrease of mean carbon emissions for US automobiles in the past 10 years, while car size has not seen any dramatic decrease. 
+## Introduction & Main Hypothesis:
+I am interested in the US automobile industry and carbon emission in the past 10 years. I would like to conduct a study on the change of carbon emissions for cars manufactured in the past 10 years im the US, and how this is related to time, fuel type (regular gasoline, premium gasoline, diesel, etc), combined miles per gallon, vehicle size class(compact, vans, two-seaters, etc), and engine displacement. 
+To put this into more formulated language: my research question is "what are the contributing factors to the change of CO2 emissions of automobiles in the US in the past ten years, with respect to fuel type, car type, and fuel efficiency". My hypothesis is that "increasing fuel efficiency and decrease dependence on diesel have contributed to the decrease of mean carbon emissions for US automobiles in the past 10 years, while car size has not seen any dramatic decrease. 
 The base for my hypothesis is that, although the US has been joining and quitting the Paris Agreement, and the current administration denied the severity of climate change, consumer preferences for cars that are cheaper to drive and the abandonment of diesel, a less efficient source of power has helped the carbom emission decrease for US vehicles. 
+
+## Data Discription
+This project uses data from the U.S. government website FuelEconomy.gov, which is jointly maintained by the U.S. Department of Energy (DOE) and the Environmental Protection Agency (EPA).The dataset contains detailed information on vehicle fuel economy, fuel type, and emissions for vehicles sold in the United States. These data are based on standardized testing conducted by the EPA’s National Vehicle and Fuel Emissions Laboratory, as well as manufacturer-submitted data reviewed by the EPA.The dataset includes variables such as fuel type, vehicle class, fuel efficiency (miles per gallon), engine characteristics, and estimated CO2 tailpipe emissions. It covers a wide range of vehicle models across multiple years, making it suitable for analyzing long-term trends in fuel efficiency and emissions in the U.S. automobile industry. The data has 49,806 lines. 
+
 
 ## Explanatory varibles
 My explanatory variables are time (measured in year), fuel type (measured as a categorical variable), car size (also a categorical variable), and fuel efficiency (a numerical variable). For the categorical variables, I will see how the number of each group changed over time. For example, has the number of car models that is labeled as "compacted" decrease overtime? For the numerical variables, a direct measurement of the mean carbon emission will be more straightforward. 
@@ -35,6 +30,8 @@ If the number of models that rely on diesel decreased, the mean fuel efficiency 
 ```{r}
 library(tidyverse)
 library(dplyr)
+library(infer)
+library(broom)
 vehicles<-
   read.csv("/Users/darrenli/Desktop/Poli Sci 270/PS270-final-project/data/vehicles.csv")
 glimpse(vehicles)
@@ -106,3 +103,84 @@ graph_mean_tailpipe_change_year
 ```
 
 Interpretation: I find the five most popular vehicle types and try to show the change in co2 tailpipe emissions throughout the years. The trend clearly shows that co2 tailpipe emissions has decreased steadily for compact cars, large cars, midsize cars. On the other hand, co2 tailpipe emissions has roughly remained the same for subcompact cars and two-seaters. 
+
+## Main Regression
+
+```{r}
+vehicles_reg <- vehicles_interest |>
+  filter(!is.na(co2TailpipeGpm),
+         !is.na(city08),
+         !is.na(fuelType1),
+         !is.na(VClass),
+         !is.na(year))
+
+model1 <- lm(co2TailpipeGpm ~ city08 + fuelType1 + VClass + year,data = vehicles_reg)
+
+model1_tidy<- tidy(model1) |>
+  filter(
+    term == "city08" |
+    term == "year" |
+    str_detect(term, "fuelType1")
+  ) |>
+  mutate(
+    significance = case_when(
+      p.value < 0.001 ~ "***",
+      p.value < 0.01 ~ "**",
+      p.value < 0.05 ~ "*",
+      TRUE ~ ""
+    )
+  ) |>
+  knitr::kable(digits = 3, caption = "Regression Results (Key Variables Only)")
+
+model1_tidy
+```
+## Interpretation of Regression:
+The table presents the key regression results for the relationship between vehicle characteristics and CO2 emissions. 
+
+Fuel efficiency (city08) has a large and statistically significant negative effect on CO2 emissions. Specifically, a one-unit increase in miles per gallon is associated with approximately a 10 gram decrease in CO2 emissions per mile, holding other factors constant. This suggests that improvements in fuel efficiency play a major role in reducing emissions.
+
+The coefficient on year is also negative and statistically significant, indicating that CO2 emissions have decreased over time even after controlling for fuel efficiency, fuel type, and vehicle class. This likely reflects technological improvements in vehicle design as well as increasing regulatory pressure on emissions.
+
+Fuel type and vehicle class are included in the model and are jointly significant, indicating that both the type of fuel used and the size/type of the vehicle also contribute to differences in emissions.
+
+Vehicle Class, once included in the graph, will add many more lines to the table. Vehicle class has a significant impact on emissions. Larger vehicles such as vans, pickup trucks, and SUVs tend to have substantially higher emissions compared to smaller vehicles, holding fuel efficiency constant.
+
+## Regression Visualization
+
+```{r}
+vehicles_reg |>
+  ggplot(aes(x = city08, y = co2TailpipeGpm)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "lm", color = "blue") +
+  labs(
+    title = "Fuel Efficiency and CO2 Emissions",
+    x = "Fuel Efficiency (City MPG)",
+    y = "CO2 Emissions (g/mile)"
+  ) +
+  theme_minimal()
+```
+
+This means that there's a clear negative correlation between CO2 emission and Fuel Efficiency. As Fuel efficiency decrease, CO2 emissions decrease until fuel efficiency reaches 80. The change between 80 and 160 is not dramatic , remaining at a very low level (around 0)
+
+```{r}
+vehicles_reg |>
+  ggplot(aes(x = fuelType1, y = co2TailpipeGpm)) +
+  geom_point(alpha = 0.2) +
+  geom_smooth(method = "lm", color = "blue") +
+  labs(
+    title = "CO2 Emissions by Fuel Type",
+    x = "Fuel Type",
+    y = "CO2 Emissions (g/mile)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+This graph shows that CO2 emissions vary substantially across fuel types.Vehicles using gasoline (both regular and premium) shows the highest and most widely distributed CO2 emissions, indicating greater variability and generally higher emission levels. Diesel and midgrade gasoline vehicles have moderately high emissions, but less variation compared to gasoline.In contrast, electricity and hydrogen vehicles have emissions close to zero, reflecting their low or zero tailpipe emissions. Natural gas vehicles fall in between, with lower emissions than gasoline but higher than electric vehicles.Overall, the figure highlights that fuel type is an important determinant of vehicle emissions, with cleaner energy sources such as electricity associated with significantly lower CO2 output.
+
+## Conclution
+
+Overall, the results support my hypothesis that higher fuel efficiency and changes in fuel type are associated with lower CO2 emissions over time. The regression shows a strong negative relationship between fuel efficiency and emissions, and emissions also tend to decrease over time. The plots also suggest that gasoline vehicles have higher emissions, while electric vehicles have very low emissions.
+
+However, this analysis has some limitations. The data only include tailpipe emissions and do not capture full lifecycle emissions, especially for electric vehicles. There may also be omitted variables, such as vehicle weight or engine type, that affect emissions. In addition, some missing data could influence the results.
